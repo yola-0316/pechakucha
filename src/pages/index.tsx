@@ -57,7 +57,7 @@ const Home: NextPage = () => {
         <section className="flex" style={{ height: "calc(100vh - 6rem)" }}>
           {presentationState && (
             <>
-              <aside className="basis-60">
+              <aside className="basis-60 shrink-0">
                 <div>
                   <button
                     onClick={() =>
@@ -74,12 +74,17 @@ const Home: NextPage = () => {
                   {presentationState.slides.map((slide) => (
                     <li key={slide.name} className="flex">
                       <b className="w-8">{slide.name}</b>
-                      <span className="block grow h-40 leading-[10rem] text-center border m-4 bg-slate-200">thumbnail</span>
+                      <span className="block grow h-40 leading-[10rem] text-center border m-4 bg-slate-200">
+                        thumbnail
+                      </span>
                     </li>
                   ))}
                 </ul>
               </aside>
-              <main className="grow flex items-center">
+              <main
+                className="grow flex items-center"
+                style={{ width: "calc(100%-15rem)" }}
+              >
                 <SlideLayout />
               </main>
             </>

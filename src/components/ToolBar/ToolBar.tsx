@@ -6,6 +6,8 @@ interface ToolBarProps {
 }
 
 function ToolBar({ onAction }: ToolBarProps) {
+  console.log("render ToolBar");
+
   return (
     <div className="absolute z-10 left-1/2 -translate-x-1/2 top-2 flex gap-2 px-2">
       <button

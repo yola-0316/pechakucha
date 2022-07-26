@@ -1,6 +1,11 @@
-import { useState, useCallback, useRef } from "react";
-import Image from "next/image";
-import Cropper from "react-easy-crop";
+import { useState, useCallback } from "react";
+import { useFilePicker } from "use-file-picker";
+import {
+  CropperRef,
+  FixedCropper,
+  ImageRestriction,
+} from "react-advanced-cropper";
+import "react-advanced-cropper/dist/style.css";
 import ToolBar from "../ToolBar/ToolBar";
 
 interface SlideCellProps {
@@ -9,66 +14,55 @@ interface SlideCellProps {
 }
 
 const SlideCell: React.FC<SlideCellProps> = ({ className, children }) => {
-  const [img, setImg] = useState("");
-  const [edit, setEdit] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const onCropComplete = useCallback(
-    (croppedArea: any, croppedAreaPixels: any) => {
-      console.log(croppedArea, croppedAreaPixels);
-    },
-    []
-  );
-
-  const handleImageChoose = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImg(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const [openFileSelector, { filesContent, loading, errors }] = useFilePicker({
+    readAs: "DataURL",
+    accept: "image/*",
+    multiple: false,
+  });
 
   const handleToolBarAction = (actionType: string) => {
     if (actionType === "upload") {
-      inputRef.current?.click();
+      return openFileSelector();
     }
+    if (actionType === "crop") {
+      // setEdit(true);
+    }
+  };
+
+  const onChange = (cropper: CropperRef) => {
+    console.log(cropper.getCoordinates(), cropper.getCanvas());
   };
 
   return (
     <div className={`${className} border flex justify-center`}>
-      {!img && (
-        <div className="placeholder inline-flex items-center justify-center">
-          <span>Click to add a image.</span>
-          <input type="file" onChange={handleImageChoose} ref={inputRef} />
+      {!filesContent.length && (
+        <div
+          className="placeholder flex items-center justify-center cursor-pointer w-full"
+          onClick={openFileSelector}
+        >
+          Click to add an image.
         </div>
       )}
-      {img && (
+      {filesContent[0] && (
         <div className="img-container w-full h-full relative">
           <ToolBar onAction={handleToolBarAction} />
-          <Image
-            src={img}
-            width="100%"
-            height="100%"
-            alt="img"
-            layout="fill"
-            objectFit="cover"
+          <FixedCropper
+            className="w-full h-full"
+            src={filesContent[0].content}
+            onChange={onChange}
+            stencilProps={{
+              handlers: false,
+              lines: false,
+              movable: false,
+              resizable: false,
+              // aspectRatio: 16 / 9,
+            }}
+            stencilSize={{
+              width: 500,
+              height: 600,
+            }}
+            imageRestriction={ImageRestriction.stencil}
           />
-          {edit && (
-            <Cropper
-              image={img}
-              crop={crop}
-              zoom={zoom}
-              aspect={4 / 3}
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-            />
-          )}
         </div>
       )}
     </div>
