@@ -9,24 +9,24 @@ export class SlideStore {
   active: SlideView | undefined = undefined;
 
   constructor(rootStore: AppStore) {
-    makeAutoObservable(this, { rootStore: false });
+    makeAutoObservable(this, { rootStore: false }, { autoBind: true });
     this.rootStore = rootStore;
   }
 
-  add = () => {
+  add() {
     const slide = new SlideView(this, this.slides.length);
     this.slides.push(slide);
     this.active = slide;
-  };
+  }
 
-  select = (slideView: SlideView) => {
+  select(slideView: SlideView) {
     console.log(slideView, slideView.id);
     this.active = slideView;
-  };
+  }
 
-  update = (slideView: SlideView) => {
+  update(slideView: SlideView) {
     this.slides.find((slide) => slide.id === slideView.id)?.update(slideView);
-  };
+  }
 }
 
 export class SlideView {
@@ -37,20 +37,20 @@ export class SlideView {
   files: SlideFile[] = [];
 
   constructor(store: SlideStore, id: number) {
-    makeAutoObservable(this, { store: false });
+    makeAutoObservable(this, { store: false }, { autoBind: true });
     this.store = store;
 
     this.id = id;
   }
 
-  update = ({ files }: Partial<SlideView>) => {
+  update({ files }: Partial<SlideView>) {
     this.files = files ?? this.files;
-  };
+  }
 
-  addFile = (file: Partial<SlideFile>) => {
+  addFile(file: Partial<SlideFile>) {
     const newfile = new SlideFile(this.store, file);
     this.files.push(newfile);
-  };
+  }
 }
 
 export class SlideFile {
@@ -61,7 +61,7 @@ export class SlideFile {
   meta: Record<string, any> = {};
 
   constructor(store: SlideStore, file: Partial<SlideFile>) {
-    makeAutoObservable(this, { store: false });
+    makeAutoObservable(this, { store: false }, { autoBind: true });
     this.store = store;
 
     this.type = file.type ?? "base64";

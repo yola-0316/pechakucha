@@ -54,13 +54,15 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
           className="slideview grow flex items-center relative"
           style={{ width: "calc(100% - 15.5rem)" }}
         >
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 border p-2 bg-slate-100">
-            Debug Info:
-            <ul>
-              <li>slide id: {slideStore.active?.id}</li>
-              <li>files: {slideStore.active?.files.length}</li>
-            </ul>
-          </div>
+          {slideStore.active && (
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 border p-2 bg-slate-100">
+              Debug Info:
+              <ul>
+                <li>slide id: {slideStore.active?.id}</li>
+                <li>files: {slideStore.active?.files.length} </li>
+              </ul>
+            </div>
+          )}
 
           {slideStore.active && (
             <SlideView
