@@ -13,10 +13,17 @@ import ToolBar from "@/components/ToolBar/ToolBar";
 
 interface SlideCellProps {
   className?: string;
-  slideView?: SlideView;
+  slideView: SlideView;
+  cellID?: number;
+  onCellUpdated?: () => void;
 }
 
-const SlideCell: FC<SlideCellProps> = ({ className, slideView }) => {
+const SlideCell: FC<SlideCellProps> = ({
+  className,
+  slideView,
+  cellID = 0,
+  onCellUpdated,
+}) => {
   console.log("rendering SlideCell", Date.now());
 
   const [openFileSelector, { clear, filesContent, loading, errors }] =
@@ -32,6 +39,7 @@ const SlideCell: FC<SlideCellProps> = ({ className, slideView }) => {
       return;
     console.log("---", filesContent[0], slideView);
     slideView?.addFile({
+      id: cellID,
       type: "base64",
       raw: filesContent[0].content,
       meta: {
@@ -40,7 +48,7 @@ const SlideCell: FC<SlideCellProps> = ({ className, slideView }) => {
     });
     clear();
     return () => clear();
-  }, [slideView, clear, filesContent]);
+  }, [slideView, cellID, clear, filesContent]);
 
   const cropperRef = useRef<FixedCropperRef>(null);
 
@@ -54,10 +62,10 @@ const SlideCell: FC<SlideCellProps> = ({ className, slideView }) => {
 
   const onChange = (cropper: FixedCropperRef) => {
     // console.log(cropper.getCoordinates(), cropper.getCanvas());
-    // onCellUpdated?.({ raw: filesContent[0] });
+    onCellUpdated?.();
   };
 
-  const hasFile = (slideView?.files?.length ?? 0) > 0;
+  const hasFile = slideView.files.at(cellID) !== undefined;
 
   return (
     <div className={`${className} border flex justify-center`}>
@@ -69,16 +77,18 @@ const SlideCell: FC<SlideCellProps> = ({ className, slideView }) => {
           Click to add an image.
         </div>
       )}
-      {hasFile && (
+
+      {hasFile && slideView.files[cellID] && (
         <div className="img-container w-full h-full relative">
           <ToolBar
             className="transition-opacity opacity-0 hover:opacity-100"
             onAction={handleToolBarAction}
           />
+
           <FixedCropper
             className="w-full h-full"
             ref={cropperRef}
-            src={slideView?.files?.[0].raw}
+            src={slideView?.files?.[cellID].raw}
             onChange={onChange}
             stencilProps={{
               handlers: false,

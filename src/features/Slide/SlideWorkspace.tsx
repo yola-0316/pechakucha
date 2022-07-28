@@ -60,16 +60,12 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
               <ul>
                 <li>slide id: {slideStore.active?.id}</li>
                 <li>files: {slideStore.active?.files.length} </li>
+                <li>thumb: {slideStore.active?.thumbnail} </li>
               </ul>
             </div>
           )}
 
-          {slideStore.active && (
-            <SlideView
-              slide={slideStore.active}
-              onSlideUpdated={slideStore.update}
-            />
-          )}
+          {slideStore.active && <SlideView slide={slideStore.active} />}
         </main>
       </div>
     </div>

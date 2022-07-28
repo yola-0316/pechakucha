@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
 import { AppStore } from ".";
 
@@ -23,10 +23,6 @@ export class SlideStore {
     console.log(slideView, slideView.id);
     this.active = slideView;
   }
-
-  update(slideView: SlideView) {
-    this.slides.find((slide) => slide.id === slideView.id)?.update(slideView);
-  }
 }
 
 export class SlideView {
@@ -43,19 +39,20 @@ export class SlideView {
     this.id = id;
   }
 
-  update({ files }: Partial<SlideView>) {
-    this.files = files ?? this.files;
-  }
-
   addFile(file: Partial<SlideFile>) {
     const newfile = new SlideFile(this.store, file);
     this.files.push(newfile);
+  }
+
+  updateThumbnail(thumbnail: string) {
+    this.thumbnail = thumbnail ?? this.thumbnail;
   }
 }
 
 export class SlideFile {
   store: SlideStore;
 
+  id: number;
   type: "base64" | "url" = "base64";
   raw: string = "";
   meta: Record<string, any> = {};
@@ -64,6 +61,7 @@ export class SlideFile {
     makeAutoObservable(this, { store: false }, { autoBind: true });
     this.store = store;
 
+    this.id = file.id ?? 0;
     this.type = file.type ?? "base64";
     this.raw = file.raw ?? "";
     this.meta = file.meta ?? {};
