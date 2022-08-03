@@ -15,7 +15,7 @@ const Home: NextPage = () => {
       <main>
         <nav className="flex items-center justify-between h-20 border-b px-2">
           <h1 className="text-3xl font-bold">PechaKucha</h1>
-          <div>User: Admin</div>
+          <div><button>About</button></div>
         </nav>
 
         <section className="flex" style={{ height: "calc(100vh - 5rem)" }}>

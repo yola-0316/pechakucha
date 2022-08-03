@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { clsx } from "clsx";
 
 import { useStore } from "@/components/StoreProvider";
+import { Overlay } from "@/components/Overlay";
 import SlideView from "./SlideView";
 
 interface SlideShowProps {}
@@ -15,8 +16,18 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
   return (
     <div className="w-full h-full">
       <div className="flex items-center h-8 border-b">
-        <div className="filmstrip-actions">
-          <button onClick={slideStore.add}>+</button>
+        <div className="filmstrip-actions flex">
+          <div className="btn-group flex mr-1">
+            <button className="btn" onClick={slideStore.add}>
+              +
+            </button>
+            <Overlay onAction={() => {}}>
+              <button className="btn">=</button>
+            </Overlay>
+          </div>
+          <button className="btn mr-1">&lt;</button>
+          <button className="btn mr-1">&gt;</button>
+          <button className="btn mr-1">[-]</button>
         </div>
       </div>
 
@@ -59,8 +70,8 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
               Debug Info:
               <ul>
                 <li>slide id: {slideStore.active?.id}</li>
-                <li>files: {slideStore.active?.files.length} </li>
-                <li>thumb: {slideStore.active?.thumbnail} </li>
+                <li>files: {Object.keys(slideStore.active?.files).length} </li>
+                <li>thumb: {slideStore.active?.thumbnail?.length} </li>
               </ul>
             </div>
           )}

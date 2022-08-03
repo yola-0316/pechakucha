@@ -30,7 +30,7 @@ const SlideView: FC<SlideViewProps> = ({ slide }) => {
       slide?.updateThumbnail(dataUrl);
     });
   }, [slide]);
-  const onAllCellUpdatedDebounced = useDebounce(onAllCellUpdated, 100);
+  const onAllCellUpdatedDebounced = useDebounce(onAllCellUpdated, 1000);
 
   const onCellUpdated = useCallback(() => {
     console.log("onCellUpdated");

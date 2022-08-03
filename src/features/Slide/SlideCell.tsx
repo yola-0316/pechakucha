@@ -1,4 +1,5 @@
 import { FC, useRef, useEffect } from "react";
+import { toJS } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useFilePicker } from "use-file-picker";
 import {
@@ -28,20 +29,23 @@ const SlideCell: FC<SlideCellProps> = ({
 
   const [openFileSelector, { clear, filesContent, loading, errors }] =
     useFilePicker({
-      readAs: "DataURL",
+      readAs: "ArrayBuffer",
       accept: "image/*",
       multiple: false,
     });
 
   useEffect(() => {
     if (!filesContent[0]) return;
-    if (slideView?.files.find((f) => f.meta.name === filesContent[0].name))
-      return;
+    for (let [id, slide] of Object.entries(slideView.files)) {
+      if (slide.meta.name === filesContent[0].name) {
+        return;
+      }
+    }
     console.log("---", filesContent[0], slideView);
     slideView?.addFile({
       id: cellID,
       type: "base64",
-      raw: filesContent[0].content,
+      raw: filesContent[0].content as unknown as ArrayBuffer,
       meta: {
         name: filesContent[0].name,
       },
@@ -65,7 +69,8 @@ const SlideCell: FC<SlideCellProps> = ({
     onCellUpdated?.();
   };
 
-  const hasFile = slideView.files.at(cellID) !== undefined;
+  const hasFile = slideView.files[cellID]?.raw !== undefined;
+  console.log(toJS(slideView.files));
 
   return (
     <div className={`${className} border flex justify-center`}>
@@ -88,7 +93,7 @@ const SlideCell: FC<SlideCellProps> = ({
           <FixedCropper
             className="w-full h-full"
             ref={cropperRef}
-            src={slideView?.files?.[cellID].raw}
+            src={slideView?.files?.[cellID].objectUrl}
             onChange={onChange}
             stencilProps={{
               handlers: false,

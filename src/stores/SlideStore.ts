@@ -30,7 +30,7 @@ export class SlideView {
 
   id: number;
   thumbnail: string | null = null;
-  files: SlideFile[] = [];
+  files: Record<number, SlideFile> = {};
 
   constructor(store: SlideStore, id: number) {
     makeAutoObservable(this, { store: false }, { autoBind: true });
@@ -39,9 +39,9 @@ export class SlideView {
     this.id = id;
   }
 
-  addFile(file: Partial<SlideFile>) {
+  addFile(file: Omit<SlideFile, "objectUrl">) {
     const newfile = new SlideFile(this.store, file);
-    this.files.push(newfile);
+    this.files[newfile.id] = newfile;
   }
 
   updateThumbnail(thumbnail: string) {
@@ -50,20 +50,35 @@ export class SlideView {
 }
 
 export class SlideFile {
-  store: SlideStore;
+  store?: SlideStore;
 
   id: number;
   type: "base64" | "url" = "base64";
-  raw: string = "";
+  raw: ArrayBuffer;
+  // objectUrl?: string | null = null;
+  cdnUrl?: string | null = null;
   meta: Record<string, any> = {};
 
-  constructor(store: SlideStore, file: Partial<SlideFile>) {
+  constructor(store: SlideStore, file: Omit<SlideFile, "objectUrl">) {
     makeAutoObservable(this, { store: false }, { autoBind: true });
     this.store = store;
 
     this.id = file.id ?? 0;
     this.type = file.type ?? "base64";
-    this.raw = file.raw ?? "";
+    this.raw = file.raw;
     this.meta = file.meta ?? {};
+
+    reaction(
+      () => this.raw,
+      () => {
+        // this.objectUrl = URL.createObjectURL(this.raw);
+        console.log("------1234", this.raw, this.objectUrl);
+      }
+    );
+  }
+
+  get objectUrl() {
+    console.log("------1", this.raw);
+    return window.URL.createObjectURL(new Blob([this.raw]));
   }
 }
