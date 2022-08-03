@@ -1,17 +1,18 @@
 import Image from "next/image";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { clsx } from "clsx";
 
 import { useStore } from "@/components/StoreProvider";
 import { Overlay } from "@/components/Overlay";
-import SlideView from "./SlideView";
+import SlideView, { Layout } from "./SlideView";
 
 interface SlideShowProps {}
 
 const SlideWorkspace: FC<SlideShowProps> = () => {
   console.log("rendering SlideWorkspace", Date.now());
   const { slideStore } = useStore();
+  const [layout, setLayout] = useState<Layout>("layout1");
 
   return (
     <div className="w-full h-full">
@@ -21,7 +22,13 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
             <button className="btn" onClick={slideStore.add}>
               +
             </button>
-            <Overlay onAction={() => {}}>
+            <Overlay
+              onAction={(layout) => {
+                console.log("xxxx", layout);
+                setLayout(layout as Layout);
+                slideStore.add();
+              }}
+            >
               <button className="btn">=</button>
             </Overlay>
           </div>
@@ -76,7 +83,9 @@ const SlideWorkspace: FC<SlideShowProps> = () => {
             </div>
           )}
 
-          {slideStore.active && <SlideView slide={slideStore.active} />}
+          {slideStore.active && (
+            <SlideView slide={slideStore.active} layout={layout} />
+          )}
         </main>
       </div>
     </div>

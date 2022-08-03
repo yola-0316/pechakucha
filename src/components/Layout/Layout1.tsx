@@ -1,17 +1,40 @@
 import clsx from "clsx";
 import { useState } from "react";
+import SlideCell from "@/features/Slide/SlideCell";
+import type { SlideView } from "@/stores/SlideStore";
 
 interface LayoutProps {
   className?: string;
   children?: React.ReactNode;
   actions?: React.ReactNode;
-  onAction: (actionType: string) => void;
+  slideView: SlideView;
+  onCellUpdated?: () => void;
 }
 
-function Layout1({ className = "", children, onAction }: LayoutProps) {
+function Layout1({
+  className = "",
+  children,
+  slideView,
+  onCellUpdated,
+}: LayoutProps) {
   console.log("render Layout1");
 
-  return <div className={clsx("", className)}></div>;
+  return (
+    <div className={clsx("grid grid-cols-2 gap-3 aspect-[16/9]", className)}>
+      <SlideCell
+        className="aspect-[8/9]"
+        slideView={slideView}
+        cellID={0}
+        onCellUpdated={onCellUpdated}
+      />
+      <SlideCell
+        className="aspect-[8/9]"
+        slideView={slideView}
+        cellID={1}
+        onCellUpdated={onCellUpdated}
+      />
+    </div>
+  );
 }
 
 function Layout1Thumb() {
